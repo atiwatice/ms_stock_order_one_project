@@ -1,0 +1,25 @@
+
+app:
+  version: 0.0.1
+
+spring:
+  profiles:
+    active: dev
+  application:
+    name: ms-product-service
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/ms_product_service?currentSchema=ms_product_service
+    username: ms_product_service
+    password: ms_product_service
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+    open-in-view: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+server:
+  port: 8020

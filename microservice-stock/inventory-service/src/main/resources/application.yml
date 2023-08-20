@@ -1,0 +1,26 @@
+
+
+app:
+  version: 0.0.1
+
+spring:
+  profiles:
+    active: dev
+  application:
+    name: ms-inventory-service
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/ms_inventory_service?currentSchema=ms_inventory_service
+    username: ms_inventory_service
+    password: ms_inventory_service
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+    open-in-view: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+server:
+  port: 8030

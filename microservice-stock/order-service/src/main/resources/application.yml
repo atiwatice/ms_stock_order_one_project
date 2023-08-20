@@ -1,0 +1,32 @@
+
+app:
+  version: 0.0.1
+
+spring:
+  profiles:
+    active: dev
+  application:
+    name: ms-order-service
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/ms_order_service?currentSchema=ms_order_service
+    username: ms_order_service
+    password: ms_order_service
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+    open-in-view: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+server:
+  port: 8010
+  
+kafka:
+  order:
+    address: localhost:29092
+    topic-name: order-topic
+    group-id: order-group-id
+    
