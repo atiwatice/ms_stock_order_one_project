@@ -1,0 +1,60 @@
+
+
+app:
+  version: 0.0.1
+
+spring:
+  profiles:
+    active: dev
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: ms-product-service
+          uri:  lb://ms-product-service
+          predicates:
+          - Path=/api/product
+          
+        - id: ms-inventory-service
+          uri:  lb://ms-inventory-service
+          predicates:
+          - Path=/api/inventory
+          
+        - id: ms-order-service
+          uri:  lb://ms-order-service
+          predicates:
+          - Path=/api/order
+          
+        - id: discovery-server
+          uri:  http://localhost:8761
+          predicates:
+          - Path=/eureka/web
+          filters:
+          - SetPath=/
+          
+        - id: discovery-server-static
+          uri:  http://localhost:8761
+          predicates:
+          - Path=/eureka/**
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/auth/realms/microservice-stock
+          jwk-set-uri: http://localhost:8080/auth/realms/microservice-stock/protocol/openid-connect/certs
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka:password@localhost:8761/eureka
+    
+server:
+  port: 8700
+  
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+
+# Product service routes
