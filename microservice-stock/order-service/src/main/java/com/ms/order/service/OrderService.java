@@ -17,6 +17,8 @@ import com.ms.order.entity.OrderLineItems;
 import com.ms.order.repository.OrderItemsRepository;
 import com.ms.order.repository.OrderRepository;
 
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 @Transactional
@@ -31,6 +33,9 @@ public class OrderService {
 
 	@Autowired
 	WebClient.Builder webClientBuilder;
+	
+	@Autowired
+	ObservationRegistry observationRegistry;
 
 	public String placeOrder(OrderRequest orderRequest) {
 		Order order = new Order();
@@ -43,6 +48,14 @@ public class OrderService {
 
 		List<String> skuCodes = orderLineItems.stream().map(OrderLineItems::getSkuCode).toList();
 
+
+        // Call Inventory Service, and place order if product is in
+        // stock
+        Observation inventoryServiceObservation = Observation.createNotStarted("inventory-service-lookup",
+                this.observationRegistry);
+        inventoryServiceObservation.lowCardinalityKeyValue("call", "inventory-service");
+        return inventoryServiceObservation.observe(() -> {
+		
 		InventoryResponse[] inventoryResponseArray = webClientBuilder.build().get()
 				.uri("http://ms-inventory-service/api/inventory",
 						uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build())
@@ -61,6 +74,8 @@ public class OrderService {
 		} else {
 			throw new IllegalArgumentException("Product is not in stock, please try again later");
 		}
+		
+        });
 
 	}
 
