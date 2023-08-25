@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ms.order.dto.OrderLineItemsDto;
+import com.ms.order.dto.OrderNotiDto;
 import com.ms.order.dto.request.OrderRequest;
 import com.ms.order.dto.response.InventoryResponse;
 import com.ms.order.entity.Order;
@@ -36,6 +37,9 @@ public class OrderService {
 	
 	@Autowired
 	ObservationRegistry observationRegistry;
+	
+	@Autowired
+	KafKaProducerService kafKaProducerService;
 
 	public String placeOrder(OrderRequest orderRequest) {
 		Order order = new Order();
@@ -69,6 +73,8 @@ public class OrderService {
 
 			orderLineItems.stream().forEach(orderItem -> orderItem.setOrderId(orderId));
 			orderItemsRepository.saveAllAndFlush(orderLineItems);
+			
+			kafKaProducerService.saveCreateUserLog(OrderNotiDto.builder().orderNumber(orderNumber).build());
 
 			return "Order Placed";
 		} else {
